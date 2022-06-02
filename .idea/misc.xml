@@ -3,7 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Code/AndroidNative/ProductivityLauncher/app/src/main/res/layout/activity_app_drawer.xml" value="0.16927083333333334" />
+        <entry key="..\:/Code/AndroidNative/ProductivityLauncher/app/src/main/res/layout/activity_home.xml" value="0.16927083333333334" />
         <entry key="..\:/Code/AndroidNative/ProductivityLauncher/app/src/main/res/layout/activity_main.xml" value="0.15208333333333332" />
+        <entry key="..\:/Code/AndroidNative/ProductivityLauncher/app/src/main/res/layout/app_drawer.xml" value="0.16927083333333334" />
+        <entry key="..\:/Code/AndroidNative/ProductivityLauncher/app/src/main/res/layout/app_drawer_row.xml" value="0.1" />
+        <entry key="..\:/Code/AndroidNative/ProductivityLauncher/app/src/main/res/layout/row.xml" value="0.16927083333333334" />
       </map>
     </option>
   </component>
