@@ -14,7 +14,7 @@ import com.example.productivitylauncher.models.AppInfo
 
 
 class AppsRecycler(context: Context) : RecyclerView.Adapter<AppsRecycler.ViewHolder>() {
-    private val appsList: MutableList<AppInfo>
+    val appsList: MutableList<AppInfo>
 
     init {
         val packageManager: PackageManager = context.packageManager
