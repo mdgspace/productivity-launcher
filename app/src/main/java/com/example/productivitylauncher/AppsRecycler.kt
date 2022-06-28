@@ -24,11 +24,13 @@ class AppsRecycler(context: Context) : RecyclerView.Adapter<AppsRecycler.ViewHol
 
         appsList = ArrayList()
         for (resolveInfo in allApps) {
+            val appTimer = AppTimer(20000)
             appsList.add(
                 AppInfo(
                     resolveInfo.loadLabel(packageManager),
                     resolveInfo.activityInfo.packageName,
-                    resolveInfo.activityInfo.loadIcon(packageManager)
+                    resolveInfo.activityInfo.loadIcon(packageManager),
+                    appTimer
                 )
             )
         }
