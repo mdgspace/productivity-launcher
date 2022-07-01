@@ -1,12 +1,16 @@
 package com.example.productivitylauncher
 
+import android.app.usage.UsageStats
+import android.app.usage.UsageStatsManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.productivitylauncher.models.AppInfo
+import java.util.*
 
 
 class AppDrawer : AppCompatActivity() {
@@ -22,28 +26,58 @@ class AppDrawer : AppCompatActivity() {
                 o1?.label.toString().compareTo(o2?.label.toString(), true)
             }
 
-            // Iterate over appList, check if app name is com.android.chrome, if so, start its timer
-            for (app in it.appsList) {
-                if ((app.packageName == "com.android.chrome") and !app.timer.mTimerRunning) {
-                    app.timer.start()
-                }
-            }
-
             val handler = Handler(Looper.getMainLooper())
+            var currentForegroundTask = "NULL"
 
             val r: Runnable = object : Runnable {
                 override fun run() {
-                    appBlock()
+                    checkTask()
                     handler.postDelayed(this, 1000)
                 }
 
-                // TODO: appBlock() should be triggered from timer.OnFinish
-                //      Adapter starts again after going back on screen,
+                // TODO: Adapter starts again after going back on screen,
                 //      thus store the list outside of here
+
+                fun checkTask()
+                {
+                    val foregroundTask = getForegroundTask()
+
+                    if(currentForegroundTask != foregroundTask)
+                    {
+                        if(foregroundTask != "NULL")
+                        {
+                            for (app in it.appsList) {
+                                if (app.packageName == foregroundTask) {
+                                    app.timer?.start()
+                                }
+                            }
+                        }
+                        if(currentForegroundTask != "NULL")
+                        {
+                            for (app in it.appsList) {
+                                if (app.packageName == currentForegroundTask) {
+                                    app.timer?.pause()
+                                }
+                            }
+                        }
+                        currentForegroundTask = foregroundTask
+                    }
+
+                    if(foregroundTask != "NULL")
+                    {
+                        appBlock()
+                    }
+                }
 
                 fun appBlock()
                 {
-                    it.appsList.removeIf { el: AppInfo -> (!el.timer.enabled) }
+                    for (app in it.appsList) {
+                        if (app.packageName == currentForegroundTask && app.timer?.enabled == false) {
+                                app.uid?.let { it1 -> android.os.Process.killProcess(it1) }
+                        }
+                    }
+
+                    it.appsList.removeIf { el: AppInfo -> (el.timer!=null && !el.timer.enabled) }
                     it.notifyDataSetChanged()
                 }
             }
@@ -52,26 +86,23 @@ class AppDrawer : AppCompatActivity() {
         }
     }
 
-//    Code for checking if app is running in foreground
-//    TODO : Check this to pause timer and use a list instead of one app
-//    private fun printForegroundTask(): String {
-//        println("Working")
-//        var currentApp = "NULL"
-//        val usm = this.getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
-//        val time = System.currentTimeMillis()
-//        val appList =
-//            usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
-//        if (appList != null && appList.size > 0) {
-//            val mySortedMap: SortedMap<Long, UsageStats> = TreeMap()
-//            for (usageStats in appList) {
-//                mySortedMap[usageStats.lastTimeUsed] = usageStats
-//            }
-//            if (!mySortedMap.isEmpty()) {
-//                currentApp = mySortedMap[mySortedMap.lastKey()]?.packageName ?: "NULL"
-//            }
-//        }
-//        Log.e("adapter", "Current App in foreground is: $currentApp")
-//        return currentApp
-//    }
+    // Code for checking if app is running in foreground
+    private fun getForegroundTask(): String {
+        var currentApp = "NULL"
+        val usm = this.getSystemService(USAGE_STATS_SERVICE) as UsageStatsManager
+        val time = System.currentTimeMillis()
+        val appList =
+            usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
+        if (appList != null && appList.size > 0) {
+            val mySortedMap: SortedMap<Long, UsageStats> = TreeMap()
+            for (usageStats in appList) {
+                mySortedMap[usageStats.lastTimeUsed] = usageStats
+            }
+            if (!mySortedMap.isEmpty()) {
+                currentApp = mySortedMap[mySortedMap.lastKey()]?.packageName ?: "NULL"
+            }
+        }
+        return currentApp
+    }
 }
 

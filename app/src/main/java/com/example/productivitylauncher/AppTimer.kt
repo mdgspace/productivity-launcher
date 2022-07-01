@@ -23,19 +23,15 @@ class AppTimer(runningTime:Long) {
             override fun onFinish() {
                 mTimerRunning = false
                 enabled = false
-                println("Timer finished")
             }
         }.start()
         mTimerRunning = true
-        // Print the remaining time to the console.
-        println("Remaining time: $mTimeLeftInMillis")
 
     }
 
     fun pause() {
         mCountDownTimer!!.cancel()
         mTimerRunning = false
-        println("Paused")
     }
 
     private fun reset() {
