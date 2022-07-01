@@ -24,11 +24,22 @@ class AppsRecycler(context: Context) : RecyclerView.Adapter<AppsRecycler.ViewHol
 
         appsList = ArrayList()
         for (resolveInfo in allApps) {
+
+            var appTimer: AppTimer? = null
+
+            for (app in BlockListHandler.appBlockList) {
+                if (app.packageName == resolveInfo.activityInfo.packageName) {
+                    appTimer = app.allowedTime?.let { AppTimer(it) }
+                }
+            }
+
             appsList.add(
                 AppInfo(
                     resolveInfo.loadLabel(packageManager),
                     resolveInfo.activityInfo.packageName,
-                    resolveInfo.activityInfo.loadIcon(packageManager)
+                    resolveInfo.activityInfo.loadIcon(packageManager),
+                    appTimer,
+                    packageManager.getApplicationInfo(resolveInfo.activityInfo.packageName, 0).uid
                 )
             )
         }

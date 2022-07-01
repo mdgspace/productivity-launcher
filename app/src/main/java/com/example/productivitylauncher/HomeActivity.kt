@@ -2,6 +2,7 @@ package com.example.productivitylauncher
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
@@ -14,5 +15,7 @@ class HomeActivity : AppCompatActivity() {
             val intent = Intent(this, AppDrawer::class.java)
             startActivity(intent)
         }
+        val intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+        startActivity(intent)
     }
 }
